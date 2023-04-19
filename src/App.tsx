@@ -1,14 +1,9 @@
-import {
-  Controller,
-  FormProvider,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
-import './App.css';
-import classNames from 'classnames';
-import InputMask from 'react-input-mask';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
+import InputMask from 'react-input-mask';
+import { Input } from 'reactstrap';
+import * as yup from 'yup';
+import './App.css';
 
 interface FormValues {
   cardNumber: string;
@@ -27,7 +22,6 @@ export default function App() {
     resolver: yupResolver(schema),
   });
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },
@@ -35,9 +29,24 @@ export default function App() {
 
   return (
     <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <label>Test</label>
-      <input {...register('test', { required: true })} />
+      <Controller
+        name="test"
+        control={control}
+        render={({ field: { ref, ...restField } }) => (
+          <Input {...restField} innerRef={ref} type="text" />
+        )}
+      />
       <p>{errors.test?.message}</p>
+
+      <Controller
+        name="nested"
+        control={control}
+        render={({ field: { ref, ...restField } }) => (
+          <Input {...restField} innerRef={ref} type="text" />
+        )}
+      />
+      <p>{errors.nested?.message}</p>
+
       <Controller
         defaultValue=""
         control={control}
@@ -46,13 +55,10 @@ export default function App() {
           return (
             <InputMask
               {...field}
-              mask="9999-9999-9999-9999"
+              mask="1-1-1"
               maskChar={null}
-              placeholder="Card number"
-              className={classNames(`form-control`, {
-                'is-valid': !!field.value,
-                'is-invalid': !!errors.cardNumber,
-              })}
+              alwaysShowMask={false}
+              inputRef={field.ref}
             />
           );
         }}
